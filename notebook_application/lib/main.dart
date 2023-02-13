@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:notebook_application/notesPage.dart';
-import 'package:notebook_application/HelloPage.dart';
+//import 'package:notebook_application/NotePage.dart';
 
 void main() => runApp(MyApp());
 

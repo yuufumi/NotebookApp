@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:notebook_application/NotePage.dart';
+import 'package:notebook_application/TODOListPage.dart';
 
 class NotesPage extends StatefulWidget {
   @override
+  List<String> title = [""];
+
+  void AddNote(String titre) {
+    this.title.add(titre);
+  }
+
   _NotesPageState createState() => _NotesPageState();
 }
 
 class Note extends StatelessWidget {
-  const Note({super.key});
+  String title;
+  Note(this.title);
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +35,7 @@ class Note extends StatelessWidget {
             ),
           ),
           Text(
-            "my note",
+            title,
             style: TextStyle(
               fontFamily: "Poppins",
               fontSize: 16,
@@ -43,7 +52,8 @@ class Note extends StatelessWidget {
 }
 
 class _NotesPageState extends State<NotesPage> {
-  int nbNotes = 0;
+  List<String> titles = ["Life style", "Mlbb"];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,12 +81,13 @@ class _NotesPageState extends State<NotesPage> {
       body: Padding(
         padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
         child: GridView.count(
-            mainAxisSpacing: 40,
-            crossAxisSpacing: 60,
-            crossAxisCount: 2,
-            children: <Note>[
-              for (int i = 0; i < nbNotes; i++) Note(),
-            ]),
+          mainAxisSpacing: 40,
+          crossAxisSpacing: 60,
+          crossAxisCount: 2,
+          children: titles.map((title) {
+            return Note(title);
+          }).toList(),
+        ),
       ),
       bottomNavigationBar: BottomAppBar(
         color: Color(0xff111111),
@@ -152,12 +163,20 @@ void _showDialog(BuildContext context) {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Center(
-                child: Text(
-                  "Note",
-                  style: TextStyle(
-                    color: Color(0xff37d98b),
-                    fontFamily: "Poppins",
-                    fontSize: 16,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => NotePage()),
+                    );
+                  },
+                  child: Text(
+                    "Note",
+                    style: TextStyle(
+                      color: Color(0xff37d98b),
+                      fontFamily: "Poppins",
+                      fontSize: 16,
+                    ),
                   ),
                 ),
               ),
@@ -167,12 +186,20 @@ void _showDialog(BuildContext context) {
                 endIndent: 30,
               ),
               Center(
-                child: Text(
-                  "Liste de vérifications",
-                  style: TextStyle(
-                    color: Color(0xff37d98b),
-                    fontFamily: "Poppins",
-                    fontSize: 16,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => TODOListPage()),
+                    );
+                  },
+                  child: Text(
+                    "Liste de vérifications",
+                    style: TextStyle(
+                      color: Color(0xff37d98b),
+                      fontFamily: "Poppins",
+                      fontSize: 16,
+                    ),
                   ),
                 ),
               ),
