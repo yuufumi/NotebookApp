@@ -1,22 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/NotePage.dart';
+import 'package:flutter_application/NotesDB.dart';
 import 'package:flutter_application/TODOListPage.dart';
+
+Sqldb sqldb = new Sqldb();
 
 class NotesPage extends StatefulWidget {
   @override
-  List<String> title = [""];
-
-  void AddNote(String titre) {
-    this.title.add(titre);
-  }
-
   _NotesPageState createState() => _NotesPageState();
 }
 
 class Note extends StatelessWidget {
-  String title;
+  late String title;
   Note(this.title);
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -52,10 +48,9 @@ class Note extends StatelessWidget {
 }
 
 class _NotesPageState extends State<NotesPage> {
-  List<String> titles = ["Life style", "Mlbb"];
-
   @override
   Widget build(BuildContext context) {
+    sqldb.initializeDb();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -80,13 +75,24 @@ class _NotesPageState extends State<NotesPage> {
       backgroundColor: Color(0xff222222),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
-        child: GridView.count(
-          mainAxisSpacing: 40,
-          crossAxisSpacing: 60,
-          crossAxisCount: 2,
-          children: titles.map((title) {
-            return Note(title);
-          }).toList(),
+        child: FutureBuilder<dynamic>(
+          future: sqldb.getProducts(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              List notes = snapshot.data!;
+              return GridView.count(
+                  mainAxisSpacing: 40,
+                  crossAxisSpacing: 60,
+                  crossAxisCount: 2,
+                  children: notes.map((note) {
+                    return Note(note.title);
+                  }).toList());
+            } else if (snapshot.hasError) {
+              return Text('Error fetching data from database');
+            } else {
+              return Center(child: CircularProgressIndicator());
+            }
+          },
         ),
       ),
       bottomNavigationBar: BottomAppBar(

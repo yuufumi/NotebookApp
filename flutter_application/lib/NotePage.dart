@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-//import 'package:notebook_application/notesPage.dart';
+import 'package:flutter_application/NotesDB.dart';
+import 'package:flutter_application/notesPage.dart';
 
 class NotePage extends StatefulWidget {
   const NotePage({super.key});
@@ -9,6 +10,8 @@ class NotePage extends StatefulWidget {
 }
 
 class _NotePageState extends State<NotePage> {
+  final _titleController = TextEditingController();
+  final _contentController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,6 +22,7 @@ class _NotePageState extends State<NotePage> {
         title: Container(
           padding: EdgeInsets.fromLTRB(0, 2, 0, 0),
           child: TextField(
+            controller: _titleController,
             decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: "Title",
@@ -35,6 +39,7 @@ class _NotePageState extends State<NotePage> {
         leading: GestureDetector(
             onTap: () {
               Navigator.pop(context);
+              Navigator.pop(context);
             },
             child: Icon(
               Icons.arrow_back_ios_new_rounded,
@@ -45,6 +50,7 @@ class _NotePageState extends State<NotePage> {
       body: Padding(
         padding: const EdgeInsets.fromLTRB(26, 10, 26, 0),
         child: TextField(
+          controller: _contentController,
           maxLines: 100,
           decoration: InputDecoration(
             border: InputBorder.none,
@@ -64,9 +70,14 @@ class _NotePageState extends State<NotePage> {
         color: Color.fromARGB(255, 30, 30, 30),
         child: GestureDetector(
           onTap: () {
+            note x = note(
+                title: _titleController.text,
+                content: _contentController.text,
+                favorite: 0);
+            sqldb.insert(x);
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => NotePage()),
+              MaterialPageRoute(builder: (context) => NotesPage()),
             );
           },
           child: Container(
