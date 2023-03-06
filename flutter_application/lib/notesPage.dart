@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application/NotePage.dart';
 import 'package:flutter_application/NotesDB.dart';
 import 'package:flutter_application/TODOListPage.dart';
+import 'package:flutter_application/NoteDetails.dart';
 
 Sqldb sqldb = new Sqldb();
 
@@ -10,9 +11,15 @@ class NotesPage extends StatefulWidget {
   _NotesPageState createState() => _NotesPageState();
 }
 
-class Note extends StatelessWidget {
-  late String title;
-  Note(this.title);
+class Note extends StatefulWidget {
+  late note n;
+  Note(this.n);
+
+  @override
+  State<Note> createState() => _NoteState();
+}
+
+class _NoteState extends State<Note> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -25,17 +32,40 @@ class Note extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 0, 0, 100),
-            child: Icon(
-              Icons.star_border_rounded,
-              color: Color(0xff555555),
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  if (widget.n.favorite == null) {
+                    widget.n.favorite = 1;
+                  } else {
+                    widget.n.favorite = null;
+                  }
+                  print(widget.n.favorite);
+                });
+              },
+              child: Icon(
+                widget.n.favorite == 1.0
+                    ? Icons.star_rounded
+                    : Icons.star_border_rounded,
+                color: Color(0xff555555),
+              ),
             ),
           ),
-          Text(
-            title,
-            style: TextStyle(
-              fontFamily: "Poppins",
-              fontSize: 16,
-              color: Colors.white,
+          GestureDetector(
+            onTap: () {
+              int? x = widget.n.id;
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NoteDetails(x)),
+              );
+            },
+            child: Text(
+              widget.n.title.toString(),
+              style: TextStyle(
+                fontFamily: "Poppins",
+                fontSize: 16,
+                color: Colors.white,
+              ),
             ),
           ),
           SizedBox(
@@ -85,7 +115,7 @@ class _NotesPageState extends State<NotesPage> {
                   crossAxisSpacing: 60,
                   crossAxisCount: 2,
                   children: notes.map((note) {
-                    return Note(note.title);
+                    return Note(note);
                   }).toList());
             } else if (snapshot.hasError) {
               return Text('Error fetching data from database');

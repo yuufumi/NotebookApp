@@ -1,3 +1,4 @@
+import "package:flutter_application/notesPage.dart";
 import 'package:sqflite/sqflite.dart';
 import "package:path/path.dart";
 import "dart:async";
@@ -61,6 +62,14 @@ class Sqldb {
     return List.generate(result.length, (i) {
       return note.fromObject(result[i]);
     });
+  }
+
+  Future<note> getNoteById(int? id) async {
+    Database? db = await this.db;
+
+    var result = await db!.query("products", where: "id = 10");
+    print(note.fromObject(result).id);
+    return note.fromObject(result);
   }
 
   Future<int> insert(note note) async {
