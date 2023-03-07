@@ -1,3 +1,5 @@
+import "dart:ffi";
+
 import "package:flutter_application/notesPage.dart";
 import 'package:sqflite/sqflite.dart';
 import "package:path/path.dart";
@@ -7,8 +9,7 @@ class note {
   int? id;
   String? title;
   String? content;
-  double? favorite;
-
+  int? favorite;
   note({this.title, this.content, this.favorite});
   note.withId({this.id, this.title, this.content, this.favorite});
 
@@ -28,7 +29,7 @@ class note {
     this.id = int.tryParse(o["id"].toString());
     this.title = o["title"];
     this.content = o["content"];
-    this.favorite = double.tryParse(o["unitPrice"].toString());
+    this.favorite = int.tryParse(o["unitPrice"].toString());
   }
 }
 
@@ -64,18 +65,16 @@ class Sqldb {
     });
   }
 
-  Future<note> getNoteById(int? id) async {
-    Database? db = await this.db;
-
-    var result = await db!.query("products", where: "id = 10");
-    print(note.fromObject(result).id);
-    return note.fromObject(result);
-  }
-
   Future<int> insert(note note) async {
     Database? db = await this.db;
     var result = await db!.insert("products", note.toMap());
     return result;
+  }
+
+  Future<bool> idExist(int id) async {
+    Database? db = await this.db;
+    var result = await db!.query("products", where: "id = ?", whereArgs: [id]);
+    return result.isNotEmpty;
   }
 
   Future<int> delete(int id) async {
@@ -87,7 +86,18 @@ class Sqldb {
   Future<int> update(note note) async {
     Database? db = await this.db;
     var result = await db!
-        .update("notes", note.toMap(), where: "id=?", whereArgs: [note.id]);
+        .update("products", note.toMap(), where: "id=?", whereArgs: [note.id]);
     return result;
+  }
+
+  void display() async {
+    Database? db = await this.db;
+    final List<Map<String, dynamic>> rows = await db!.query('products');
+
+    // Print the rows to the console
+    for (Map<String, dynamic> row in rows) {
+      print(
+          '${row['id']} | ${row['title']} | ${row['content']} | ${row['favorite']}');
+    }
   }
 }

@@ -3,17 +3,18 @@ import 'package:flutter_application/NotesDB.dart';
 import 'package:flutter_application/notesPage.dart';
 
 class NotePage extends StatefulWidget {
-  const NotePage({super.key});
+  late note n;
+  NotePage(this.n);
 
   @override
   State<NotePage> createState() => _NotePageState();
 }
 
 class _NotePageState extends State<NotePage> {
-  final _titleController = TextEditingController();
-  final _contentController = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    var _titleController = TextEditingController(text: widget.n.title);
+    var _contentController = TextEditingController(text: widget.n.content);
     return Scaffold(
       backgroundColor: Color(0xff222222),
       appBar: AppBar(
@@ -69,15 +70,18 @@ class _NotePageState extends State<NotePage> {
       bottomNavigationBar: BottomAppBar(
         color: Color.fromARGB(255, 30, 30, 30),
         child: GestureDetector(
-          onTap: () {
-            note x = note(
+          onTap: () async {
+            note x = note.withId(
+                id: widget.n.id,
                 title: _titleController.text,
                 content: _contentController.text,
                 favorite: 0);
-            sqldb.insert(x);
+            x.id == null ? sqldb.insert(x) : sqldb.update(x);
+
+            sqldb.display();
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => NotesPage()),
+              MaterialPageRoute(builder: (context) => NotesPage.withoutList()),
             );
           },
           child: Container(

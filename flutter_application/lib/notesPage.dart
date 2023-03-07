@@ -4,9 +4,12 @@ import 'package:flutter_application/NotesDB.dart';
 import 'package:flutter_application/TODOListPage.dart';
 import 'package:flutter_application/NoteDetails.dart';
 
-Sqldb sqldb = new Sqldb();
+Sqldb sqldb = Sqldb();
 
 class NotesPage extends StatefulWidget {
+  late List<dynamic> listNotes;
+  NotesPage.withoutList();
+  NotesPage(this.listNotes);
   @override
   _NotesPageState createState() => _NotesPageState();
 }
@@ -22,49 +25,65 @@ class Note extends StatefulWidget {
 class _NoteState extends State<Note> {
   @override
   Widget build(BuildContext context) {
+    print(widget.n.content);
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         color: Color(0xff333333),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 0, 0, 100),
             child: GestureDetector(
               onTap: () {
                 setState(() {
-                  if (widget.n.favorite == null) {
+                  if (widget.n.favorite == 0) {
                     widget.n.favorite = 1;
                   } else {
-                    widget.n.favorite = null;
+                    widget.n.favorite = 0;
                   }
-                  print(widget.n.favorite);
+                  note x = note.withId(
+                      id: widget.n.id,
+                      title: widget.n.title,
+                      content: widget.n.content,
+                      favorite: widget.n.favorite);
+                  sqldb.update(x);
                 });
               },
-              child: Icon(
-                widget.n.favorite == 1.0
-                    ? Icons.star_rounded
-                    : Icons.star_border_rounded,
-                color: Color(0xff555555),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
+                child: Icon(
+                  widget.n.favorite == 1
+                      ? Icons.star_rounded
+                      : Icons.star_border_rounded,
+                  color: widget.n.favorite == 1
+                      ? Color(0xff37d98b)
+                      : Color(0xff555555),
+                ),
               ),
             ),
           ),
           GestureDetector(
             onTap: () {
-              int? x = widget.n.id;
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => NoteDetails(x)),
+                MaterialPageRoute(builder: (context) => NoteDetails(widget.n)),
               );
             },
-            child: Text(
-              widget.n.title.toString(),
-              style: TextStyle(
-                fontFamily: "Poppins",
-                fontSize: 16,
-                color: Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
+              child: Container(
+                width: 55,
+                child: Text(
+                  widget.n.title.toString(),
+                  style: TextStyle(
+                    fontFamily: "Poppins",
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ),
           ),
@@ -109,13 +128,13 @@ class _NotesPageState extends State<NotesPage> {
           future: sqldb.getProducts(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              List notes = snapshot.data!;
+              widget.listNotes = snapshot.data!;
               return GridView.count(
                   mainAxisSpacing: 40,
                   crossAxisSpacing: 60,
                   crossAxisCount: 2,
-                  children: notes.map((note) {
-                    return Note(note);
+                  children: widget.listNotes.map((x) {
+                    return Note(x);
                   }).toList());
             } else if (snapshot.hasError) {
               return Text('Error fetching data from database');
@@ -135,7 +154,9 @@ class _NotesPageState extends State<NotesPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      sqldb.display();
+                    },
                     icon: Icon(
                       Icons.menu_rounded,
                       color: Color(0xffffffff),
@@ -186,7 +207,9 @@ class _NotesPageState extends State<NotesPage> {
   }
 }
 
-void _showDialog(BuildContext context) {
+void _showDialog(
+  BuildContext context,
+) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -201,9 +224,10 @@ void _showDialog(BuildContext context) {
               Center(
                 child: GestureDetector(
                   onTap: () {
+                    note x = note(title: "", content: "", favorite: 0);
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => NotePage()),
+                      MaterialPageRoute(builder: (context) => NotePage(x)),
                     );
                   },
                   child: Text(
