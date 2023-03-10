@@ -3,14 +3,21 @@ import 'package:flutter_application/NotePage.dart';
 import 'package:flutter_application/NotesDB.dart';
 import 'package:flutter_application/TODOListPage.dart';
 import 'package:flutter_application/NoteDetails.dart';
-import 'package:flutter_application/favoritesPage.dart';
+import 'package:flutter_application/notesPage.dart';
 
-class NotesPage extends StatefulWidget {
+class favoritesPage extends StatefulWidget {
   late List<dynamic> listNotes;
-  NotesPage.withoutList();
-  NotesPage(this.listNotes);
+  favoritesPage.withoutList();
+  favoritesPage(this.listNotes);
+  void displayNotes() {
+    for (dynamic n in listNotes) {
+      print(
+          "${note.fromObject(n).id} ${note.fromObject(n).title} ${note.fromObject(n).content} ${note.fromObject(n).favorite}");
+    }
+  }
+
   @override
-  _NotesPageState createState() => _NotesPageState();
+  _favoritesPageState createState() => _favoritesPageState();
 }
 
 class Note extends StatefulWidget {
@@ -24,10 +31,7 @@ class Note extends StatefulWidget {
 class _NoteState extends State<Note> {
   @override
   Widget build(BuildContext context) {
-    print(widget.n.title);
-    print(widget.n.content);
-    print(widget.n.favorite);
-    print(widget.n.id);
+    //print("${widget.n.title} | ${widget.n.content} | ${widget.n.favorite} ${widget.n.id}");
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
@@ -98,15 +102,16 @@ class _NoteState extends State<Note> {
   }
 }
 
-class _NotesPageState extends State<NotesPage> {
+class _favoritesPageState extends State<favoritesPage> {
   @override
   Widget build(BuildContext context) {
+    sqldb.display();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          "BlackNote",
+          "Favorites",
           style: TextStyle(fontFamily: "Poppins"),
         ),
         centerTitle: true,
@@ -126,7 +131,7 @@ class _NotesPageState extends State<NotesPage> {
       body: Padding(
         padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
         child: FutureBuilder<dynamic>(
-          future: sqldb.getNotes(),
+          future: sqldb.getFavoriteNotes(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               widget.listNotes = snapshot.data!;
@@ -156,7 +161,7 @@ class _NotesPageState extends State<NotesPage> {
                 children: [
                   IconButton(
                     onPressed: () {
-                      sqldb.display();
+                      Navigator.pop(context);
                     },
                     icon: Icon(
                       Icons.menu_rounded,
@@ -185,13 +190,7 @@ class _NotesPageState extends State<NotesPage> {
                     ),
                   ),
                   IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  favoritesPage.withoutList()));
-                    },
+                    onPressed: () {},
                     icon: Icon(
                       Icons.star_border_rounded,
                       color: Color(0xffffffff),

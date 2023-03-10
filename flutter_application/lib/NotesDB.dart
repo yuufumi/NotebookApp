@@ -47,6 +47,7 @@ class Sqldb {
 
   Future<Database> initializeDb() async {
     String dbPath = join(await getDatabasesPath(), "notes.db");
+    print(dbPath);
     var eTradeDb = await openDatabase(dbPath, version: 1, onCreate: createDb);
     return eTradeDb;
   }
@@ -56,11 +57,22 @@ class Sqldb {
         "Create table products(id integer primary key, title text, content text, favorite integer)");
   }
 
-  Future<List> getProducts() async {
+  Future<List> getNotes() async {
     Database? db = await this.db;
     var result = await db!.query("products");
     //return result;
     return List.generate(result.length, (i) {
+      return note.fromObject(result[i]);
+    });
+  }
+
+  Future<List> getFavoriteNotes() async {
+    Database? db = await this.db;
+    var result = await db!.query("products", where: "favorite = 1");
+    //return result;
+    return List.generate(result.length, (i) {
+      print(
+          "${note.fromObject(result[i]).favorite} | ${note.fromObject(result[i]).title} | ${note.fromObject(result[i]).content}");
       return note.fromObject(result[i]);
     });
   }
@@ -101,3 +113,5 @@ class Sqldb {
     }
   }
 }
+
+Sqldb sqldb = Sqldb();

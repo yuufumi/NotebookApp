@@ -3,8 +3,6 @@ import 'package:flutter_application/NotesDB.dart';
 import 'package:flutter_application/notesPage.dart';
 import 'package:flutter_application/NotePage.dart';
 
-Sqldb sqldb = Sqldb();
-
 class NoteDetails extends StatefulWidget {
   late note n;
   NoteDetails(this.n);

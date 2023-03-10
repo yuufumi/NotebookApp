@@ -72,10 +72,10 @@ class _NotePageState extends State<NotePage> {
         child: GestureDetector(
           onTap: () async {
             note x = note.withId(
-                id: widget.n.id,
-                title: _titleController.text,
-                content: _contentController.text,
-                favorite: 0);
+              id: widget.n.id,
+              title: _titleController.text,
+              content: _contentController.text,
+            );
             x.id == null ? sqldb.insert(x) : sqldb.update(x);
 
             sqldb.display();
