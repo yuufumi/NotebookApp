@@ -18,10 +18,6 @@ class _NoteDetailsState extends State<NoteDetails> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Container(
-          padding: EdgeInsets.fromLTRB(0, 2, 0, 0),
-          child: Container(),
-        ),
         leading: GestureDetector(
             onTap: () {
               Navigator.pop(context);
@@ -49,8 +45,7 @@ class _NoteDetailsState extends State<NoteDetails> {
                 sqldb.delete(widget.n.id!);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => NotesPage.withoutList()),
+                  MaterialPageRoute(builder: (context) => NotesPage()),
                 );
               },
               icon: Icon(
@@ -72,26 +67,28 @@ class _NoteDetailsState extends State<NoteDetails> {
       ),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(26, 20, 26, 0),
-        child: Column(
-          children: [
-            Text(
-              widget.n.title!,
-              style: TextStyle(
-                  fontFamily: "Poppins",
-                  fontSize: 30,
-                  color: Color(0xff37d98b)),
-            ),
-            SizedBox(
-              height: 50,
-            ),
-            Text(
-              widget.n.content!,
-              style: TextStyle(
-                  fontFamily: "Poppins",
-                  fontSize: 26,
-                  color: Color(0xffeeeeee)),
-            ),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Text(
+                widget.n.title!,
+                style: TextStyle(
+                    fontFamily: "Poppins",
+                    fontSize: 30,
+                    color: Color(0xff37d98b)),
+              ),
+              SizedBox(
+                height: 50,
+              ),
+              Text(
+                widget.n.content!,
+                style: TextStyle(
+                    fontFamily: "Poppins",
+                    fontSize: 26,
+                    color: Color(0xffeeeeee)),
+              ),
+            ],
+          ),
         ),
       ),
     );

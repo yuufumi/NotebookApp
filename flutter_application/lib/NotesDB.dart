@@ -29,7 +29,7 @@ class note {
     this.id = int.tryParse(o["id"].toString());
     this.title = o["title"];
     this.content = o["content"];
-    this.favorite = int.tryParse(o["unitPrice"].toString());
+    this.favorite = int.tryParse(o["favorite"].toString());
   }
 }
 
@@ -47,7 +47,6 @@ class Sqldb {
 
   Future<Database> initializeDb() async {
     String dbPath = join(await getDatabasesPath(), "notes.db");
-    print(dbPath);
     var eTradeDb = await openDatabase(dbPath, version: 1, onCreate: createDb);
     return eTradeDb;
   }

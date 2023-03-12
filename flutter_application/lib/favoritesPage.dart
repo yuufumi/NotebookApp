@@ -6,16 +6,7 @@ import 'package:flutter_application/NoteDetails.dart';
 import 'package:flutter_application/notesPage.dart';
 
 class favoritesPage extends StatefulWidget {
-  late List<dynamic> listNotes;
-  favoritesPage.withoutList();
-  favoritesPage(this.listNotes);
-  void displayNotes() {
-    for (dynamic n in listNotes) {
-      print(
-          "${note.fromObject(n).id} ${note.fromObject(n).title} ${note.fromObject(n).content} ${note.fromObject(n).favorite}");
-    }
-  }
-
+  favoritesPage();
   @override
   _favoritesPageState createState() => _favoritesPageState();
 }
@@ -30,8 +21,24 @@ class Note extends StatefulWidget {
 
 class _NoteState extends State<Note> {
   @override
+  void _toggleFavorite() {
+    setState(() {
+      if (widget.n.favorite == null) {
+        widget.n.favorite = 1;
+      } else {
+        widget.n.favorite = null;
+      }
+      note x = note.withId(
+          id: widget.n.id,
+          title: widget.n.title,
+          content: widget.n.content,
+          favorite: widget.n.favorite);
+      sqldb.update(x);
+    });
+  }
+
   Widget build(BuildContext context) {
-    //print("${widget.n.title} | ${widget.n.content} | ${widget.n.favorite} ${widget.n.id}");
+    sqldb.display();
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
@@ -43,21 +50,7 @@ class _NoteState extends State<Note> {
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 0, 0, 100),
             child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  if (widget.n.favorite == null) {
-                    widget.n.favorite = 1;
-                  } else {
-                    widget.n.favorite = null;
-                  }
-                  note x = note.withId(
-                      id: widget.n.id,
-                      title: widget.n.title,
-                      content: widget.n.content,
-                      favorite: widget.n.favorite);
-                  sqldb.update(x);
-                });
-              },
+              onTap: _toggleFavorite,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
                 child: Icon(
@@ -134,12 +127,12 @@ class _favoritesPageState extends State<favoritesPage> {
           future: sqldb.getFavoriteNotes(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              widget.listNotes = snapshot.data!;
+              List list = snapshot.data!;
               return GridView.count(
                   mainAxisSpacing: 40,
                   crossAxisSpacing: 60,
                   crossAxisCount: 2,
-                  children: widget.listNotes.map((x) {
+                  children: list.map((x) {
                     return Note(x);
                   }).toList());
             } else if (snapshot.hasError) {
@@ -161,7 +154,10 @@ class _favoritesPageState extends State<favoritesPage> {
                 children: [
                   IconButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => NotesPage()),
+                      );
                     },
                     icon: Icon(
                       Icons.menu_rounded,

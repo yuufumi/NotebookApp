@@ -81,7 +81,7 @@ class _NotePageState extends State<NotePage> {
             sqldb.display();
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => NotesPage.withoutList()),
+              MaterialPageRoute(builder: (context) => NotesPage()),
             );
           },
           child: Container(
