@@ -41,13 +41,10 @@ class _NoteDetailsState extends State<NoteDetails> {
                 color: Color(0xff37d98b),
               )),
           IconButton(
-              onPressed: () {
-                sqldb.delete(widget.n.id!);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => NotesPage()),
-                );
-              },
+              onPressed: () => _showDialog(context)
+
+              /**/
+              ,
               icon: Icon(
                 Icons.delete_outline,
                 color: Color(0xff37d98b),
@@ -92,5 +89,80 @@ class _NoteDetailsState extends State<NoteDetails> {
         ),
       ),
     );
+  }
+
+  void _showDialog(
+    BuildContext context,
+  ) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            backgroundColor: Color(0xff222222),
+            child: Container(
+              height: 150,
+              width: 300,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(10, 30, 10, 10),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Are you sure you want to delete this?",
+                      style: TextStyle(
+                        color: Color(0xffeeeeee),
+                        fontFamily: "Poppins",
+                        fontSize: 14,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Divider(
+                      color: Color(0xff333333),
+                      indent: 10,
+                      endIndent: 10,
+                    ),
+                    SizedBox(height: 5),
+                    Center(
+                      child: Row(
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              sqldb.delete(widget.n.id!);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        NotesPage(false, false)),
+                              );
+                            },
+                            child: Text(
+                              "Yes",
+                              style: TextStyle(
+                                  color: Color(0xff37d98b),
+                                  fontFamily: "Poppins",
+                                  fontSize: 16),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text(
+                              "No",
+                              style: TextStyle(
+                                  color: Color(0xff37d98b),
+                                  fontFamily: "Poppins",
+                                  fontSize: 16),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
   }
 }

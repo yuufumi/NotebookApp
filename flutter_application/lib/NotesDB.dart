@@ -65,6 +65,24 @@ class Sqldb {
     });
   }
 
+  Future<List> getNotesSorted() async {
+    Database? db = await this.db;
+    var result = await db!.query("products", orderBy: "title ASC");
+    //return result;
+    return List.generate(result.length, (i) {
+      return note.fromObject(result[i]);
+    });
+  }
+
+  Future<List> getNotesModified() async {
+    Database? db = await this.db;
+    var result = await db!.query("products", orderBy: "LastModifiedDate ASC");
+    //return result;
+    return List.generate(result.length, (i) {
+      return note.fromObject(result[i]);
+    });
+  }
+
   Future<List> getFavoriteNotes() async {
     Database? db = await this.db;
     var result = await db!.query("products", where: "favorite = 1");
@@ -80,12 +98,6 @@ class Sqldb {
     Database? db = await this.db;
     var result = await db!.insert("products", note.toMap());
     return result;
-  }
-
-  Future<bool> idExist(int id) async {
-    Database? db = await this.db;
-    var result = await db!.query("products", where: "id = ?", whereArgs: [id]);
-    return result.isNotEmpty;
   }
 
   Future<int> delete(int id) async {

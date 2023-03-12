@@ -8,7 +8,9 @@ import 'package:sqflite/sqflite.dart';
 import 'dart:async';
 
 class NotesPage extends StatefulWidget {
-  NotesPage();
+  bool sorted_by_title;
+  bool sorted_by_modification;
+  NotesPage(this.sorted_by_title, this.sorted_by_modification);
   @override
   _NotesPageState createState() => _NotesPageState();
 }
@@ -16,9 +18,6 @@ class NotesPage extends StatefulWidget {
 class Note extends StatefulWidget {
   late note n;
   Note(this.n);
-  void display() {
-    print(n.favorite);
-  }
 
   @override
   State<Note> createState() => _NoteState();
@@ -59,10 +58,10 @@ class _NoteState extends State<Note> {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
                 child: Icon(
-                  int.tryParse(widget.n.favorite.toString()) != null
+                  widget.n.favorite == 1
                       ? Icons.star_rounded
                       : Icons.star_border_rounded,
-                  color: int.tryParse(widget.n.favorite.toString()) != null
+                  color: widget.n.favorite == 1
                       ? Color(0xff37d98b)
                       : Color(0xff555555),
                 ),
@@ -112,10 +111,13 @@ class _NotesPageState extends State<NotesPage> {
           style: TextStyle(fontFamily: "Poppins"),
         ),
         centerTitle: true,
-        leading: Icon(
-          Icons.sort_rounded,
-          size: 30,
-          color: Color(0xffffffff),
+        leading: GestureDetector(
+          onTap: () => _sortDialog(context),
+          child: Icon(
+            Icons.sort_rounded,
+            size: 30,
+            color: Color(0xffffffff),
+          ),
         ),
         actions: [
           Icon(Icons.more_vert_rounded),
@@ -128,7 +130,11 @@ class _NotesPageState extends State<NotesPage> {
       body: Padding(
         padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
         child: FutureBuilder<dynamic>(
-          future: sqldb.getNotes(),
+          future: widget.sorted_by_title
+              ? sqldb.getNotesSorted()
+              : widget.sorted_by_modification
+                  ? sqldb.getNotesModified()
+                  : sqldb.getNotes(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               List list = snapshot.data!;
@@ -212,6 +218,94 @@ class _NotesPageState extends State<NotesPage> {
         ),
       ),
     );
+  }
+
+  void _sortDialog(
+    BuildContext context,
+  ) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            backgroundColor: Color(0xff222222),
+            child: Container(
+              height: 200,
+              width: 80,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Center(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => NotesPage(true, false)),
+                        );
+                      },
+                      child: Text(
+                        "titre",
+                        style: TextStyle(
+                          color: Color(0xff37d98b),
+                          fontFamily: "Poppins",
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Divider(
+                    color: Color(0xff333333),
+                    indent: 30,
+                    endIndent: 30,
+                  ),
+                  Center(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => NotesPage(false, false)),
+                        );
+                      },
+                      child: Text(
+                        "Date de création",
+                        style: TextStyle(
+                          color: Color(0xff37d98b),
+                          fontFamily: "Poppins",
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Divider(
+                    color: Color(0xff333333),
+                    indent: 30,
+                    endIndent: 30,
+                  ),
+                  Center(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => NotesPage(false, true)),
+                        );
+                      },
+                      child: Text(
+                        "Date de modification",
+                        style: TextStyle(
+                          color: Color(0xff37d98b),
+                          fontFamily: "Poppins",
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
   }
 }
 

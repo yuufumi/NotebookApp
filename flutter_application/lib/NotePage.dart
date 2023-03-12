@@ -75,13 +75,14 @@ class _NotePageState extends State<NotePage> {
               id: widget.n.id,
               title: _titleController.text,
               content: _contentController.text,
+              favorite: widget.n.favorite,
             );
             x.id == null ? sqldb.insert(x) : sqldb.update(x);
 
             sqldb.display();
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => NotesPage()),
+              MaterialPageRoute(builder: (context) => NotesPage(false, false)),
             );
           },
           child: Container(

@@ -156,7 +156,8 @@ class _favoritesPageState extends State<favoritesPage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => NotesPage()),
+                        MaterialPageRoute(
+                            builder: (context) => NotesPage(false, false)),
                       );
                     },
                     icon: Icon(
